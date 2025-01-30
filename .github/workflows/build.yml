@@ -43,11 +43,11 @@ jobs:
           cd pkg-nodejs
           jq --arg owner "$GITHUB_REPOSITORY_OWNER" \
              --arg repo "$GITHUB_REPOSITORY" \
-             '.name = "@" + $owner + "/validators-nodejs" |
+             '.name = "@\($owner)/validators-nodejs" |
              .publishConfig = {"registry": "https://npm.pkg.github.com"} |
              .repository = {
                 "type": "git",
-                "url": "git+https://github.com/" + $repo + ".git",
+                "url": "git+https://github.com/\($repo).git",
                 "directory": "pkg-nodejs"
               }' package.json > temp.json && mv temp.json package.json
 
@@ -55,11 +55,11 @@ jobs:
           cd ../pkg-bundler
           jq --arg owner "$GITHUB_REPOSITORY_OWNER" \
              --arg repo "$GITHUB_REPOSITORY" \
-             '.name = "@" + $owner + "/validators-bundler" |
+             '.name = "@\($owner)/validators-bundler" |
              .publishConfig = {"registry": "https://npm.pkg.github.com"} |
              .repository = {
                 "type": "git",
-                "url": "git+https://github.com/" + $repo + ".git",
+                "url": "git+https://github.com/\($repo).git",
                 "directory": "pkg-bundler"
               }' package.json > temp.json && mv temp.json package.json
 
