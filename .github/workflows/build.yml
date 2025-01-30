@@ -31,7 +31,6 @@ jobs:
         run: cargo install wasm-pack
 
       - name: Run tests
-        working-directory: ./validator
         run: cargo test
 
       - name: Build packages
