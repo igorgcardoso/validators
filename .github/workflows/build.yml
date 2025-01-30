@@ -1,0 +1,50 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            validator/target
+          key: ${{ runner.os }}-rust-${{ hashFiles('validator/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-
+
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Run tests
+        working-directory: ./validator
+        run: cargo test
+
+      - name: Build packages
+        run: just
+
+      - name: Upload nodejs package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-package-nodejs
+          path: validator/pkg-nodejs/
+
+      - name: Upload bundler package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-package-bundler
+          path: validator/pkg-bundler/
