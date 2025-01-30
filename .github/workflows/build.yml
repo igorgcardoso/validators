@@ -40,10 +40,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-package-nodejs
-          path: validator/pkg-nodejs/
+          path: pkg-nodejs/
 
       - name: Upload bundler package
         uses: actions/upload-artifact@v4
         with:
           name: wasm-package-bundler
-          path: validator/pkg-bundler/
+          path: pkg-bundler/
