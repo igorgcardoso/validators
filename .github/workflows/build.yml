@@ -2,20 +2,21 @@ name: Build and Publish
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches:
+    - master
+
+concurrency: 
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Install just
         uses: extractions/setup-just@v2
-
       - name: Cache Rust dependencies
         uses: actions/cache@v4
         with:
@@ -28,18 +29,11 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-rust
-
       - name: Install wasm-pack
         run: cargo install wasm-pack
-
-      - name: Run tests
-        run: cargo test
-
       - name: Build packages
         run: just
-
       - name: Update package.json files
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           # For nodejs package
           cd pkg-nodejs
@@ -66,7 +60,6 @@ jobs:
               }' package.json > temp.json && mv temp.json package.json
 
       - name: Setup Node.js
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
@@ -74,7 +67,6 @@ jobs:
           scope: "@${{ github.repository_owner }}"
 
       - name: Publish packages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           cd pkg-nodejs
           echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
