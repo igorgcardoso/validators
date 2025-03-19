@@ -1,22 +1,8 @@
-// validator.ts
-
-/**
- * Error codes for validation failures
- */
-export enum AppErrorCode {
-  InvalidCpfLength = 0,
-  InvalidCpf = 1,
-  InvalidPlate = 2,
-}
-
 /**
  * Custom validation error with code and message
  */
 export class ValidationError extends Error {
-  constructor(
-    public readonly code: AppErrorCode,
-    message: string,
-  ) {
+  constructor(message: string) {
     super(message);
     this.name = "ValidationError";
   }
@@ -33,17 +19,13 @@ export function validateCpf(cpf: string): void {
 
   if (cpfLen !== 11) {
     throw new ValidationError(
-      AppErrorCode.InvalidCpfLength,
       `CPF deve conter 11 dígitos (comprimento atual: ${cpfLen})`,
     );
   }
 
   // Check if all digits are the same
   if (/^(\d)\1+$/.test(cleanCpf)) {
-    throw new ValidationError(
-      AppErrorCode.InvalidCpf,
-      `CPF inválido: ${formatCpf(cleanCpf)}`,
-    );
+    throw new ValidationError(`CPF inválido: ${formatCpf(cleanCpf)}`);
   }
 
   // Convert to array of digits
@@ -56,10 +38,7 @@ export function validateCpf(cpf: string): void {
   const dv2 = calculateDigit([...digits.slice(0, 9), dv1], 11);
 
   if (dv1 !== digits[9] || dv2 !== digits[10]) {
-    throw new ValidationError(
-      AppErrorCode.InvalidCpf,
-      `CPF inválido: ${cleanCpf}`,
-    );
+    throw new ValidationError(`CPF inválido: ${cleanCpf}`);
   }
 }
 
@@ -84,10 +63,7 @@ export function validatePlate(plate: string): void {
   const pattern = /^[A-Z]{3}((\d[A-Z]\d{2})|(-?\d{4}))$/;
 
   if (!pattern.test(plate)) {
-    throw new ValidationError(
-      AppErrorCode.InvalidPlate,
-      `Placa inválida: ${plate}`,
-    );
+    throw new ValidationError(`Placa inválida: ${plate}`);
   }
 }
 
@@ -131,7 +107,6 @@ export function formatCpf(cpf: string): string {
 
 // For Node.js compatibility
 export default {
-  AppErrorCode,
   ValidationError,
   validateCpf,
   validatePlate,
