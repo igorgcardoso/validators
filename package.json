@@ -1,6 +1,6 @@
 {
   "name": "validator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Validation utilities for CPF and vehicle plates",
   "main": "dist/validator.js",
   "types": "dist/validator.d.ts",
